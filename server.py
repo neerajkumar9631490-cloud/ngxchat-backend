@@ -8,6 +8,25 @@ from flask_socketio import SocketIO, emit, join_room, leave_room
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "darkweb-chat-secret-2024"
 
+# -------------------- CORS headers --------------------
+@app.after_request
+def add_cors_headers(response):
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+    return response
+
+@app.route('/', defaults={'path': ''}, methods=['OPTIONS'])
+@app.route('/<path:path>', methods=['OPTIONS'])
+def handle_options(path):
+    response = app.make_default_options_response()
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+    return response
+# -----------------------------------------------------
+
+# ... (the rest of your data structures, endpoints, and socketio code remains identical) ...
 # ==================== Data Structures ====================
 connected_users = {}        # sid -> {"username": str, "room": str, "joined_at": int}
 user_sids = {}              # username -> set(sid)   for multi-tab
